@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Coffi's store</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #121212;
@@ -17,7 +16,6 @@
             align-items: center;
             min-height: 100vh;
         }
-
         header {
             width: 100%;
             max-width: 500px;
@@ -30,7 +28,6 @@
             background-color: #121212;
             z-index: 10;
         }
-
         .logo {
             font-size: 1.4rem;
             font-weight: 700;
@@ -38,10 +35,7 @@
             align-items: center;
             gap: 10px;
         }
-
         .logo span { color: #01875f; font-size: 1.6rem; }
-
-        /* AVATAR */
         .user-avatar {
             width: 35px; height: 35px;
             background: linear-gradient(135deg, #34a853, #188038, #01875f, #1e1e1e);
@@ -50,8 +44,6 @@
             font-weight: bold; cursor: pointer; border: 2px solid #fff;
             font-size: 14px;
         }
-
-        /* MODALES */
         .modal-cuenta {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
@@ -63,36 +55,27 @@
         .modal-content input {
             width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #2d2d2d; color: #fff; outline: none;
         }
-
-        /* BOTONES */
         .btn-install {
             display: block; width: 100%; background-color: #01875f; color: white; text-align: center;
             padding: 12px; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: 0.95rem;
             border: none; cursor: pointer; margin-top: 10px;
         }
-
-        /* BOTÓN CERRAR SESIÓN ROJO */
-        .btn-logout {
-            background-color: #d93025; /* Rojo Google */
-            margin-top: 20px;
-        }
-
-        /* DISEÑO INFO PERFIL */
+        .btn-logout { background-color: #d93025; margin-top: 20px; }
         .perfil-info { margin: 15px 0; text-align: left; background: #2d2d2d; padding: 15px; border-radius: 10px; }
         .perfil-info p { margin: 5px 0; font-size: 0.9rem; color: #aaa; }
         .perfil-info span { color: #fff; font-weight: bold; display: block; font-size: 1.1rem; }
-
-        .btn-cerrar-modal {
-            position: absolute; top: 10px; right: 15px; font-size: 20px; color: #aaa; cursor: pointer;
-        }
-
-        /* TIENDA */
+        .btn-cerrar-modal { position: absolute; top: 10px; right: 15px; font-size: 20px; color: #aaa; cursor: pointer; }
         .container { width: 100%; max-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
         .card { background-color: #1e1e1e; border-radius: 16px; padding: 20px; border: 1px solid #333; }
         .app-header { display: flex; gap: 15px; margin-bottom: 20px; }
         .app-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #34a853, #188038); border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 38px; }
         .app-info h2 { font-size: 1.1rem; font-weight: 500; }
         .app-info p { color: #01875f; font-weight: 700; font-size: 0.85rem; }
+        /* estilos para modal app (anuncio/interstitial) */
+        .app-modal-content { width: 95%; max-width: 420px; padding: 18px; border-radius: 16px; background: #1e1e1e; border: 1px solid #333; text-align:center; }
+        .ad-box { width:100%; height:140px; background:#222; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; margin:12px 0; }
+        .small { font-size:0.9rem; color:#aaa; margin-top:8px; }
+        .no-pointer { pointer-events: none; opacity: 0.95; }
     </style>
 </head>
 <body>
@@ -106,125 +89,306 @@
         <p style="text-align:center;">Cargando...</p>
     </div>
 
+    <!-- Modal de cuenta / registro -->
     <div id="modalCuenta" class="modal-cuenta">
-        <div class="modal-content" id="modalContenido">
-            </div>
+        <div class="modal-content" id="modalContenido"></div>
+    </div>
+
+    <!-- Modal de app / anuncio -->
+    <div id="modalApp" class="modal-cuenta">
+        <div class="app-modal-content modal-content" id="modalAppContenido"></div>
     </div>
 
     <script>
-        const urlRaw = "https://raw.githubusercontent.com/loslocos817yt-star/Minecraft-/main/Link.json?v=" + Date.now();
+    /*************************************************************************
+     * Config
+     *************************************************************************/
+    // URL JSON raw de tu repo (usabas Link.json). Mantener cache-bust con Date.now()
+    const urlRaw = "https://raw.githubusercontent.com/loslocos817yt-star/Minecraft-/main/Link.json?v=" + Date.now();
 
-        window.onload = function() {
-            cargarTienda();
+    // Script de Adsterra que pegaste (lo vamos a inyectar cuando se necesite)
+    const adsterraScriptSrc = 'https://pl28742923.effectivegatecpm.com/60/45/01/604501d907522d6182205acf5f424d38.js';
+
+    /*************************************************************************
+     * Init
+     *************************************************************************/
+    window.onload = function() {
+        cargarTienda();
+        actualizarAvatar();
+
+        if (!localStorage.getItem('coffi_nombre')) {
+            mostrarRegistro();
+        }
+    };
+
+    /*************************************************************************
+     * Perfil / Registro
+     *************************************************************************/
+    function actualizarAvatar() {
+        const nombre = localStorage.getItem('coffi_nombre');
+        const avatar = document.getElementById('user-avatar');
+        avatar.innerText = nombre ? nombre.charAt(0).toUpperCase() : "?";
+    }
+
+    function gestionarPerfil() {
+        const nombre = localStorage.getItem('coffi_nombre');
+        if (nombre) mostrarPerfil(); else mostrarRegistro();
+    }
+
+    function mostrarRegistro() {
+        const modal = document.getElementById('modalCuenta');
+        const contenido = document.getElementById('modalContenido');
+
+        modal.style.display = 'flex';
+        contenido.innerHTML = `
+            <h2>Crear Cuenta</h2>
+            <input type="text" id="regNombre" placeholder="Tu Nombre">
+            <input type="password" id="regPass" placeholder="Contraseña">
+            <button class="btn-install" onclick="guardarCuenta()">CREAR CUENTA</button>
+        `;
+    }
+
+    function mostrarPerfil() {
+        const modal = document.getElementById('modalCuenta');
+        const contenido = document.getElementById('modalContenido');
+        const nombre = localStorage.getItem('coffi_nombre');
+        const pass = localStorage.getItem('coffi_pass');
+
+        modal.style.display = 'flex';
+        contenido.innerHTML = `
+            <span class="btn-cerrar-modal" onclick="cerrarModal()">×</span>
+            <h2>Tu Perfil</h2>
+            <div class="perfil-info">
+                <p>Nombre de usuario:</p>
+                <span>${escapeHtml(nombre || '')}</span>
+                <p style="margin-top:10px;">Contraseña:</p>
+                <span>${escapeHtml(pass || '')}</span>
+            </div>
+            <button class="btn-install btn-logout" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+        `;
+    }
+
+    function guardarCuenta() {
+        const nombre = document.getElementById('regNombre').value.trim();
+        const pass = document.getElementById('regPass').value.trim();
+        if (nombre && pass) {
+            localStorage.setItem('coffi_nombre', nombre);
+            localStorage.setItem('coffi_pass', pass);
+            cerrarModal();
             actualizarAvatar();
-            
-            // Si no hay cuenta, forzar registro al inicio
-            if (!localStorage.getItem('coffi_nombre')) {
-                mostrarRegistro();
+        } else {
+            alert("Completa todos los campos");
+        }
+    }
+
+    function cerrarSesion() {
+        if (confirm("¿Seguro que quieres salir?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalCuenta').style.display = 'none';
+    }
+
+    /*************************************************************************
+     * Cargar tienda (lee tu Link.json y crea tarjetas)
+     *************************************************************************/
+    async function cargarTienda() {
+        const container = document.getElementById('tienda');
+        try {
+            const response = await fetch(urlRaw);
+            const datos = await response.json();
+            const listaJuegos = Array.isArray(datos) ? datos : [datos];
+            container.innerHTML = "";
+
+            listaJuegos.forEach(juego => {
+                if (juego.link) {
+                    const matchID = juego.link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                    if (matchID) {
+                        const linkDirecto = `https://drive.google.com/uc?export=download&id=${matchID[1]}`;
+
+                        // Crear tarjeta con createElement (más seguro que innerHTML con interpolación)
+                        const card = document.createElement('div'); card.className = 'card';
+
+                        const header = document.createElement('div'); header.className = 'app-header';
+                        const icon = document.createElement('div'); icon.className = 'app-icon'; icon.textContent = '🧊';
+                        const info = document.createElement('div'); info.className = 'app-info';
+                        const h2 = document.createElement('h2'); h2.textContent = juego.name || 'App';
+                        const p = document.createElement('p'); p.textContent = 'Oficial • Gratis';
+
+                        info.appendChild(h2); info.appendChild(p);
+                        header.appendChild(icon); header.appendChild(info);
+
+                        const btn = document.createElement('button');
+                        btn.className = 'btn-install';
+                        btn.textContent = 'Instalar';
+                        // Al hacer click, abrimos modal de detalles (tipo Play Store)
+                        btn.addEventListener('click', () => abrirDetalles(juego.name || 'App', linkDirecto));
+
+                        card.appendChild(header);
+                        card.appendChild(btn);
+
+                        container.appendChild(card);
+                    }
+                }
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = "<p style='text-align:center;'>No se encontraron apps.</p>";
             }
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = "<p style='text-align:center;'>Error al cargar</p>";
+        }
+    }
+
+    /*************************************************************************
+     * Modal tipo Play Store + integración con Adsterra (Onclick / interstitial)
+     *
+     * Flujo:
+     * 1) abrirDetalles(nombre, link) -> muestra la info de la app con botón "Descargar"
+     * 2) Al pulsar "Descargar" -> llamar mostrarAnuncio(link)
+     * 3) mostrarAnuncio inyecta script de Adsterra y muestra contador obligatorio 5s
+     * 4) Al terminar, redirige a la URL de descarga
+     *
+     *************************************************************************/
+    function abrirDetalles(nombre, link) {
+        const modal = document.getElementById('modalApp');
+        const contenido = document.getElementById('modalAppContenido');
+
+        modal.style.display = 'flex';
+
+        // contenido básico (cerrar se habilitará después del anuncio)
+        contenido.innerHTML = `
+            <span id="appCloseBtn" class="btn-cerrar-modal" style="display:block;cursor:pointer;color:#aaa;">×</span>
+            <div style="text-align:center;">
+                <div style="font-size:60px;">🧊</div>
+                <h2 style="margin-top:10px;">${escapeHtml(nombre)}</h2>
+                <p style="color:#01875f;">Oficial • Gratis</p>
+                <p class="small">Pulsa Descargar para iniciar el proceso. Verás un anuncio real por 5 segundos.</p>
+                <button id="startDownloadBtn" class="btn-install" style="margin-top:12px;">Descargar</button>
+            </div>
+        `;
+
+        // evento del boton descargar
+        document.getElementById('startDownloadBtn').onclick = function() {
+            mostrarAnuncio(link);
         };
 
-        function actualizarAvatar() {
-            const nombre = localStorage.getItem('coffi_nombre');
-            const avatar = document.getElementById('user-avatar');
-            avatar.innerText = nombre ? nombre.charAt(0).toUpperCase() : "?";
+        // cerrar modal (solo hasta que el anuncio termine)
+        const closeBtn = document.getElementById('appCloseBtn');
+        closeBtn.onclick = function() {
+            // Si hay un anuncio en progreso, evitamos cerrar
+            if (closeBtn.dataset.block === '1') return;
+            modal.style.display = 'none';
+        };
+    }
+
+    function cerrarAppModal() {
+        document.getElementById('modalApp').style.display = 'none';
+    }
+
+    /**
+     * mostrarAnuncio(link)
+     * Inyecta el script de Adsterra y muestra contador de 5 segundos.
+     * Nota: algunos scripts esperan ser añadidos al body; si no funciona, prueba mover la inyección.
+     */
+    function mostrarAnuncio(link) {
+        const modal = document.getElementById('modalApp');
+        const contenido = document.getElementById('modalAppContenido');
+
+        // Bloqueamos el cerrar mientras dure el anuncio
+        const closeBtn = document.getElementById('appCloseBtn');
+        if (closeBtn) {
+            closeBtn.style.display = 'none'; // ocultamos mientras anuncio
+            closeBtn.dataset.block = '1';
         }
 
-        function gestionarPerfil() {
-            const nombre = localStorage.getItem('coffi_nombre');
-            if (nombre) {
-                mostrarPerfil();
-            } else {
-                mostrarRegistro();
+        // contenido del anuncio
+        contenido.innerHTML = `
+            <h2>Anuncio</h2>
+            <div id="adContainer" class="ad-box no-pointer">
+                <span id="adLabel">Cargando anuncio...</span>
+            </div>
+            <p class="small">Descargando en <strong><span id="contador">5</span></strong> segundos...</p>
+            <p class="small" style="margin-top:8px;color:#bbb;">(No cierres esta ventana hasta que termine el contador)</p>
+        `;
+
+        // Evitar múltiples inyecciones del mismo script
+        const existing = document.querySelector('script[data-adsterra-id="coffistore-ad"]');
+        if (!existing) {
+            // crear script y añadir al body (algunas redes esperan estar en body)
+            const s = document.createElement('script');
+            s.src = adsterraScriptSrc;
+            s.async = true;
+            s.setAttribute('data-adsterra-id', 'coffistore-ad');
+            // Insertamos en body para mayor compatibilidad.
+            document.body.appendChild(s);
+
+            // Si el script necesita ser ejecutado con alguna función adicional,
+            // puedes añadir aquí el código necesario. (La mayoría de Onclick/Interstitals se activan con clicks.)
+        } else {
+            // si ya existe, re-ejecutar o notificar
+            console.log('Adsterra script ya inyectado');
+        }
+
+        // Forzamos 5 segundos antes de iniciar la descarga
+        let segundos = 5;
+        const contadorEl = document.getElementById('contador');
+
+        const intervalo = setInterval(() => {
+            segundos--;
+            if (contadorEl) contadorEl.innerText = Math.max(0, segundos);
+
+            if (segundos <= 0) {
+                clearInterval(intervalo);
+
+                // Rehabilitar cerrar botón
+                if (closeBtn) {
+                    closeBtn.style.display = 'block';
+                    closeBtn.dataset.block = '0';
+                }
+
+                // Iniciar descarga: redirigir al link directo
+                // Usamos replace para que el usuario no pueda volver con back fácilmente
+                try {
+                    window.location.replace(link);
+                } catch (e) {
+                    // fallback
+                    window.location.href = link;
+                }
             }
-        }
+        }, 1000);
+    }
 
-        function mostrarRegistro() {
-            const modal = document.getElementById('modalCuenta');
-            const contenido = document.getElementById('modalContenido');
-            
-            modal.style.display = 'flex';
-            contenido.innerHTML = `
-                <h2>Crear Cuenta</h2>
-                <input type="text" id="regNombre" placeholder="Tu Nombre">
-                <input type="password" id="regPass" placeholder="Contraseña">
-                <button class="btn-install" onclick="guardarCuenta()">CREAR CUENTA</button>
-            `;
-        }
+    /*************************************************************************
+     * Utilidades
+     *************************************************************************/
+    // escape básico para evitar inyección en textos mostrados
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return String(unsafe)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
-        function mostrarPerfil() {
-            const modal = document.getElementById('modalCuenta');
-            const contenido = document.getElementById('modalContenido');
-            const nombre = localStorage.getItem('coffi_nombre');
-            const pass = localStorage.getItem('coffi_pass');
-
-            modal.style.display = 'flex';
-            contenido.innerHTML = `
-                <span class="btn-cerrar-modal" onclick="cerrarModal()">×</span>
-                <h2>Tu Perfil</h2>
-                <div class="perfil-info">
-                    <p>Nombre de usuario:</p>
-                    <span>${nombre}</span>
-                    <p style="margin-top:10px;">Contraseña:</p>
-                    <span>${pass}</span>
-                </div>
-                <button class="btn-install btn-logout" onclick="cerrarSesion()">CERRAR SESIÓN</button>
-            `;
+    // cerrar modales si hacen click fuera del contenido
+    window.addEventListener('click', function(e){
+        const modalCuenta = document.getElementById('modalCuenta');
+        const modalApp = document.getElementById('modalApp');
+        if (e.target === modalCuenta) modalCuenta.style.display = 'none';
+        if (e.target === modalApp) {
+            // solo permitir cerrar si no está bloqueado
+            const appCloseBtn = document.getElementById('appCloseBtn');
+            if (!appCloseBtn || appCloseBtn.dataset.block !== '1') modalApp.style.display = 'none';
         }
-
-        function guardarCuenta() {
-            const nombre = document.getElementById('regNombre').value.trim();
-            const pass = document.getElementById('regPass').value.trim();
-            if (nombre && pass) {
-                localStorage.setItem('coffi_nombre', nombre);
-                localStorage.setItem('coffi_pass', pass);
-                cerrarModal();
-                actualizarAvatar();
-            } else {
-                alert("Completa todos los campos");
-            }
-        }
-
-        function cerrarSesion() {
-            if(confirm("¿Seguro que quieres salir?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        function cerrarModal() {
-            document.getElementById('modalCuenta').style.display = 'none';
-        }
-
-        async function cargarTienda() {
-            const container = document.getElementById('tienda');
-            try {
-                const response = await fetch(urlRaw);
-                const datos = await response.json();
-                const listaJuegos = Array.isArray(datos) ? datos : [datos];
-                container.innerHTML = "";
-                listaJuegos.forEach(juego => {
-                    if (juego.link) {
-                        const matchID = juego.link.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                        if (matchID) {
-                            const linkDirecto = `https://drive.google.com/uc?export=download&id=${matchID[1]}`;
-                            container.innerHTML += `
-                                <div class="card">
-                                    <div class="app-header">
-                                        <div class="app-icon">🧊</div>
-                                        <div class="app-info">
-                                            <h2>${juego.name}</h2>
-                                            <p>Oficial • Gratis</p>
-                                        </div>
-                                    </div>
-                                    <a href="${linkDirecto}" class="btn-install">Instalar</a>
-                                </div>
-                            `;
-                        }
-                    }
-                });
-            } catch (e) { container.innerHTML = "<p>Error al cargar</p>"; }
-        }
+    });
     </script>
+
 </body>
 </html>
