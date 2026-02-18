@@ -2,89 +2,55 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descarga Directa Minecraft</title>
+    <title>Tienda Minecraft Live</title>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
+        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 50px; }
+        .card { 
+            background: #222; border: 2px solid #444; padding: 20px; 
+            border-radius: 15px; display: inline-block; min-width: 300px;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 900px;
+        .btn {
+            display: block; background: #0080ff; color: #fff; 
+            padding: 15px; margin-top: 20px; text-decoration: none;
+            border-radius: 8px; font-weight: bold;
         }
-        .card {
-            background: #1e1e1e;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-        }
-        .card h2 { color: #4caf50; margin-bottom: 20px; }
-        .download-btn {
-            background: #4caf50;
-            color: white;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: bold;
-            display: inline-block;
-            transition: 0.3s;
-        }
-        .download-btn:hover {
-            background: #66bb6a;
-            transform: scale(1.05);
-        }
-        .note { margin-top: 15px; font-size: 0.8rem; color: #888; }
+        .btn:hover { background: #005fbf; }
+        #loading { color: #888; }
     </style>
 </head>
 <body>
 
-    <h1>Tienda de Descargas Directas</h1>
-    <div class="grid" id="container"></div>
+    <div id="tienda">
+        <p id="loading">Cargando datos desde GitHub...</p>
+    </div>
 
     <script>
-        // Tus datos originales (puedes pegar tal cual los tienes)
-        const archivos = [
-            {
-                "link": "https://drive.google.com/file/d/1aQO9xm8TgMnohTQoY0HzNWdsHx1BL8nf/view?usp=drivesdk",
-                "name": "Minecraft 1.21.131"
-            }
-        ];
+        // LA URL DE TU RAW
+        const urlRaw = "https://raw.githubusercontent.com/loslocos817yt-star/Minecraft-/main/Link.json";
 
-        // Función para convertir enlace de Drive a Descarga Directa
-        function obtenerEnlaceDirecto(url) {
-            const regex = /\/d\/([^\/]+)\//;
-            const match = url.match(regex);
-            if (match && match[1]) {
-                return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+        async function cargarTienda() {
+            try {
+                const respuesta = await fetch(urlRaw);
+                const data = await respuesta.json();
+
+                // Convertir el link de Drive a descarga directa automáticamente
+                const id = data.link.match(/\/d\/([^\/]+)\//)[1];
+                const linkDirecto = `https://drive.google.com/uc?export=download&id=${id}`;
+
+                // Dibujar la interfaz con los datos del RAW
+                document.getElementById('tienda').innerHTML = `
+                    <div class="card">
+                        <h1>📦 ${data.name}</h1>
+                        <p>Archivo detectado en el repositorio</p>
+                        <a href="${linkDirecto}" class="btn">⬇ DESCARGAR AHORA</a>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('tienda').innerHTML = "❌ Error al conectar con GitHub";
             }
-            return url;
         }
 
-        const container = document.getElementById('container');
-
-        archivos.forEach(item => {
-            const linkDirecto = obtenerEnlaceDirecto(item.link);
-            
-            container.innerHTML += `
-                <div class="card">
-                    <h2>${item.name}</h2>
-                    <a href="${linkDirecto}" class="download-btn">⬇ DESCARGAR AHORA</a>
-                    <p class="note">El archivo se descargará directamente desde los servidores de Google.</p>
-                </div>
-            `;
-        });
+        cargarTienda();
     </script>
 </body>
 </html>
-
