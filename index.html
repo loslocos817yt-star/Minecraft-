@@ -2,55 +2,171 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tienda Minecraft Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga Minecraft</title>
     <style>
-        body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 50px; }
-        .card { 
-            background: #222; border: 2px solid #444; padding: 20px; 
-            border-radius: 15px; display: inline-block; min-width: 300px;
+        /* Estilos generales y fondo oscuro */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0d12;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
-        .btn {
-            display: block; background: #0080ff; color: #fff; 
-            padding: 15px; margin-top: 20px; text-decoration: none;
-            border-radius: 8px; font-weight: bold;
+
+        /* Contenedor principal */
+        #app {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
         }
-        .btn:hover { background: #005fbf; }
-        #loading { color: #888; }
+
+        /* Tarjeta de descarga */
+        .card {
+            background: #1a1a24;
+            border: 1px solid #2d2d3d;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(43, 202, 67, 0.15);
+            border-color: #2bca43;
+        }
+
+        /* Icono principal */
+        .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(43, 202, 67, 0.4));
+        }
+
+        /* Textos */
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            color: #8a8a9e;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        /* Botón de descarga */
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #2bca43, #1e8e2f);
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(43, 202, 67, 0.3);
+        }
+
+        .btn-download:hover {
+            background: linear-gradient(135deg, #32e34d, #23a636);
+            box-shadow: 0 6px 20px rgba(43, 202, 67, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Estado de carga */
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Tarjeta de error */
+        .card.error {
+            border-color: #ff4757;
+        }
+        .card.error .icon { filter: drop-shadow(0 0 10px rgba(255, 71, 87, 0.4)); }
     </style>
 </head>
 <body>
 
-    <div id="tienda">
-        <p id="loading">Cargando datos desde GitHub...</p>
+    <div id="app">
+        <div class="card loading">
+            <div class="icon">⏳</div>
+            <h2>Conectando...</h2>
+            <p>Leyendo datos desde GitHub</p>
+        </div>
     </div>
 
     <script>
-        // LA URL DE TU RAW
+        // Tu enlace RAW directo a GitHub
         const urlRaw = "https://raw.githubusercontent.com/loslocos817yt-star/Minecraft-/main/Link.json";
+        const appContainer = document.getElementById('app');
 
-        async function cargarTienda() {
+        async function inicializarTienda() {
             try {
-                const respuesta = await fetch(urlRaw);
+                // 1. Obtener el archivo JSON
+                const respuesta = await fetch(urlRaw, { cache: "no-store" }); // Evita que se quede pegado en versiones viejas
+                if (!respuesta.ok) throw new Error("No se pudo leer el archivo de GitHub.");
+                
                 const data = await respuesta.json();
 
-                // Convertir el link de Drive a descarga directa automáticamente
-                const id = data.link.match(/\/d\/([^\/]+)\//)[1];
-                const linkDirecto = `https://drive.google.com/uc?export=download&id=${id}`;
+                // 2. Extraer el ID de Google Drive con una expresión regular
+                const match = data.link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (!match) throw new Error("El formato del link de Drive no es válido.");
+                
+                const idDrive = match[1];
 
-                // Dibujar la interfaz con los datos del RAW
-                document.getElementById('tienda').innerHTML = `
+                // 3. Crear el link de descarga directa
+                const linkDirecto = `https://drive.google.com/uc?export=download&id=${idDrive}`;
+
+                // 4. Dibujar la tarjeta final en pantalla
+                appContainer.innerHTML = `
                     <div class="card">
-                        <h1>📦 ${data.name}</h1>
-                        <p>Archivo detectado en el repositorio</p>
-                        <a href="${linkDirecto}" class="btn">⬇ DESCARGAR AHORA</a>
+                        <div class="icon">🧊</div>
+                        <h2>${data.name}</h2>
+                        <p>Archivo listo para descargar</p>
+                        <a href="${linkDirecto}" class="btn-download" download>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            DESCARGAR
+                        </a>
                     </div>
                 `;
             } catch (error) {
-                document.getElementById('tienda').innerHTML = "❌ Error al conectar con GitHub";
+                // Si algo falla, muestra esta tarjeta de error
+                console.error("Error en la tienda:", error);
+                appContainer.innerHTML = `
+                    <div class="card error">
+                        <div class="icon">⚠️</div>
+                        <h2>¡Error!</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             }
         }
 
-        cargarTienda();
+        // Ejecutar la función
+        inicializarTienda();
     </script>
+
 </body>
 </html>
