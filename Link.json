@@ -1,10 +1,12 @@
 [
   {
     "link": "https://drive.google.com/file/d/1aQO9xm8TgMnohTQoY0HzNWdsHx1BL8nf/view?usp=drivesdk",
-    "name": "Minecraft 1.21.131"
+    "name": "Minecraft 1.21.131",
+    "icon": "⛏️"
   },
   {
     "link": "https://drive.google.com/file/d/1USMcBtQHY2PT-PoApqQA5KrZjyuEv7i-/view?usp=drivesdk",
-    "name": "Minecraft bedrock 1.0.0"
+    "name": "Minecraft bedrock 1.0.0",
+    "icon": "⛏️"
   }
 ]
