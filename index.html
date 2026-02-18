@@ -18,7 +18,6 @@
             min-height: 100vh;
         }
 
-        /* Barra superior */
         header {
             width: 100%;
             max-width: 500px;
@@ -42,196 +41,190 @@
 
         .logo span { color: #01875f; font-size: 1.6rem; }
 
-        /* Contenedor de las tarjetas */
-        .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Diseño de la Tarjeta */
-        .card {
-            background-color: #1e1e1e;
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid #333;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            transition: transform 0.1s;
-        }
-
-        .card:active { transform: scale(0.98); }
-
-        .app-header {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .app-icon {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, #34a853, #188038);
-            border-radius: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 38px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .app-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .app-info h2 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .app-info p {
-            color: #01875f;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        /* Botón de Instalar */
-        .btn-install {
-            display: block;
-            width: 100%;
-            background-color: #01875f;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.95rem;
-            transition: background 0.3s;
-        }
-
-        .btn-install:hover { background-color: #00704e; }
-
-        /* Pantallas de estado */
-        .status-msg {
-            text-align: center;
-            margin-top: 100px;
-            padding: 20px;
-        }
-
-        .status-msg .icon { font-size: 60px; margin-bottom: 15px; }
-
-        .loader {
-            border: 4px solid #333;
-            border-top: 4px solid #01875f;
+        /* AVATAR */
+        .user-avatar {
+            width: 35px; height: 35px;
+            background: linear-gradient(135deg, #34a853, #188038, #01875f, #1e1e1e);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; cursor: pointer; border: 2px solid #fff;
+            font-size: 14px;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-retry {
-            background: transparent;
-            border: 1px solid #8ab4f8;
-            color: #8ab4f8;
-            padding: 10px 20px;
-            border-radius: 5px;
-            margin-top: 15px;
-            cursor: pointer;
+        /* MODALES */
+        .modal-cuenta {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
         }
+        .modal-content {
+            background: #1e1e1e; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center;
+            border: 1px solid #333; position: relative;
+        }
+        .modal-content input {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #2d2d2d; color: #fff; outline: none;
+        }
+
+        /* BOTONES */
+        .btn-install {
+            display: block; width: 100%; background-color: #01875f; color: white; text-align: center;
+            padding: 12px; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: 0.95rem;
+            border: none; cursor: pointer; margin-top: 10px;
+        }
+
+        /* BOTÓN CERRAR SESIÓN ROJO */
+        .btn-logout {
+            background-color: #d93025; /* Rojo Google */
+            margin-top: 20px;
+        }
+
+        /* DISEÑO INFO PERFIL */
+        .perfil-info { margin: 15px 0; text-align: left; background: #2d2d2d; padding: 15px; border-radius: 10px; }
+        .perfil-info p { margin: 5px 0; font-size: 0.9rem; color: #aaa; }
+        .perfil-info span { color: #fff; font-weight: bold; display: block; font-size: 1.1rem; }
+
+        .btn-cerrar-modal {
+            position: absolute; top: 10px; right: 15px; font-size: 20px; color: #aaa; cursor: pointer;
+        }
+
+        /* TIENDA */
+        .container { width: 100%; max-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .card { background-color: #1e1e1e; border-radius: 16px; padding: 20px; border: 1px solid #333; }
+        .app-header { display: flex; gap: 15px; margin-bottom: 20px; }
+        .app-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #34a853, #188038); border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 38px; }
+        .app-info h2 { font-size: 1.1rem; font-weight: 500; }
+        .app-info p { color: #01875f; font-weight: 700; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo"><span>🗿</span> Coffi's store</div>
-        <div style="background:#3c4043; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px;">L</div>
+        <div id="user-avatar" class="user-avatar" onclick="gestionarPerfil()">?</div>
     </header>
 
     <div class="container" id="tienda">
-        <div class="status-msg" id="loading">
-            <div class="loader"></div>
-            <p>Buscando actualizaciones...</p>
-        </div>
+        <p style="text-align:center;">Cargando...</p>
+    </div>
+
+    <div id="modalCuenta" class="modal-cuenta">
+        <div class="modal-content" id="modalContenido">
+            </div>
     </div>
 
     <script>
-        // URL de tu JSON en GitHub
         const urlRaw = "https://raw.githubusercontent.com/loslocos817yt-star/Minecraft-/main/Link.json?v=" + Date.now();
 
-        async function cargarTienda() {
-            const container = document.getElementById('tienda');
+        window.onload = function() {
+            cargarTienda();
+            actualizarAvatar();
             
-            try {
-                const response = await fetch(urlRaw);
-                if (!response.ok) throw new Error("Error al conectar");
+            // Si no hay cuenta, forzar registro al inicio
+            if (!localStorage.getItem('coffi_nombre')) {
+                mostrarRegistro();
+            }
+        };
 
-                const datos = await response.json();
-                
-                // Asegurarnos de que datos sea una lista
-                const listaJuegos = Array.isArray(datos) ? datos : [datos];
-                
-                // Limpiar el contenedor
-                container.innerHTML = "";
+        function actualizarAvatar() {
+            const nombre = localStorage.getItem('coffi_nombre');
+            const avatar = document.getElementById('user-avatar');
+            avatar.innerText = nombre ? nombre.charAt(0).toUpperCase() : "?";
+        }
 
-                listaJuegos.forEach(juego => {
-                    // VALIDACIÓN CRÍTICA: Si el objeto está vacío o no tiene link, lo ignora
-                    if (!juego || !juego.link || typeof juego.link !== 'string') return;
-
-                    // Intentar extraer la ID de Google Drive
-                    const matchID = juego.link.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                    
-                    if (matchID && matchID[1]) {
-                        const id = matchID[1];
-                        const linkDirecto = `https://drive.google.com/uc?export=download&id=${id}`;
-
-                        // Crear la tarjeta
-                        const card = document.createElement('div');
-                        card.className = 'card';
-                        card.innerHTML = `
-                            <div class="app-header">
-                                <div class="app-icon">🧊</div>
-                                <div class="app-info">
-                                    <h2>${juego.name || "Minecraft Version"}</h2>
-                                    <p>Oficial • Gratis</p>
-                                </div>
-                            </div>
-                            <a href="${linkDirecto}" class="btn-install">Instalar</a>
-                        `;
-                        container.appendChild(card);
-                    }
-                });
-
-                // Si después de procesar todo no hay nada, lanzamos error
-                if (container.innerHTML === "") {
-                    throw new Error("No se encontraron enlaces válidos");
-                }
-
-            } catch (error) {
-                console.error("Error:", error);
-                container.innerHTML = `
-                    <div class="status-msg">
-                        <div class="icon">🛰️</div>
-                        <h2>No se pudieron cargar los juegos</h2>
-                        <p>Revisa tu conexión o el archivo Link.json</p>
-                        <button class="btn-retry" onclick="location.reload()">REINTENTAR</button>
-                    </div>
-                `;
+        function gestionarPerfil() {
+            const nombre = localStorage.getItem('coffi_nombre');
+            if (nombre) {
+                mostrarPerfil();
+            } else {
+                mostrarRegistro();
             }
         }
 
-        // Ejecutar al cargar la página
-        window.onload = cargarTienda;
+        function mostrarRegistro() {
+            const modal = document.getElementById('modalCuenta');
+            const contenido = document.getElementById('modalContenido');
+            
+            modal.style.display = 'flex';
+            contenido.innerHTML = `
+                <h2>Crear Cuenta</h2>
+                <input type="text" id="regNombre" placeholder="Tu Nombre">
+                <input type="password" id="regPass" placeholder="Contraseña">
+                <button class="btn-install" onclick="guardarCuenta()">CREAR CUENTA</button>
+            `;
+        }
+
+        function mostrarPerfil() {
+            const modal = document.getElementById('modalCuenta');
+            const contenido = document.getElementById('modalContenido');
+            const nombre = localStorage.getItem('coffi_nombre');
+            const pass = localStorage.getItem('coffi_pass');
+
+            modal.style.display = 'flex';
+            contenido.innerHTML = `
+                <span class="btn-cerrar-modal" onclick="cerrarModal()">×</span>
+                <h2>Tu Perfil</h2>
+                <div class="perfil-info">
+                    <p>Nombre de usuario:</p>
+                    <span>${nombre}</span>
+                    <p style="margin-top:10px;">Contraseña:</p>
+                    <span>${pass}</span>
+                </div>
+                <button class="btn-install btn-logout" onclick="cerrarSesion()">CERRAR SESIÓN</button>
+            `;
+        }
+
+        function guardarCuenta() {
+            const nombre = document.getElementById('regNombre').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            if (nombre && pass) {
+                localStorage.setItem('coffi_nombre', nombre);
+                localStorage.setItem('coffi_pass', pass);
+                cerrarModal();
+                actualizarAvatar();
+            } else {
+                alert("Completa todos los campos");
+            }
+        }
+
+        function cerrarSesion() {
+            if(confirm("¿Seguro que quieres salir?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalCuenta').style.display = 'none';
+        }
+
+        async function cargarTienda() {
+            const container = document.getElementById('tienda');
+            try {
+                const response = await fetch(urlRaw);
+                const datos = await response.json();
+                const listaJuegos = Array.isArray(datos) ? datos : [datos];
+                container.innerHTML = "";
+                listaJuegos.forEach(juego => {
+                    if (juego.link) {
+                        const matchID = juego.link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                        if (matchID) {
+                            const linkDirecto = `https://drive.google.com/uc?export=download&id=${matchID[1]}`;
+                            container.innerHTML += `
+                                <div class="card">
+                                    <div class="app-header">
+                                        <div class="app-icon">🧊</div>
+                                        <div class="app-info">
+                                            <h2>${juego.name}</h2>
+                                            <p>Oficial • Gratis</p>
+                                        </div>
+                                    </div>
+                                    <a href="${linkDirecto}" class="btn-install">Instalar</a>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+            } catch (e) { container.innerHTML = "<p>Error al cargar</p>"; }
+        }
     </script>
 </body>
 </html>
